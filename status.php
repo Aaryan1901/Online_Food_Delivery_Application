@@ -9,14 +9,17 @@ if (!isset($_SESSION['uid'])) {
     exit(); // Stop further execution
 }
 
-// Fetch order details and customer's address from the database
+// Fetch order details, customer's address, and restaurant coordinates from the database
 $sqlo = "SELECT Address.state as state, Address.city as city, Address.street as street, Address.pincode as pin, 
+                Address.latitude as cust_lat, Address.longitude as cust_lng,
                 Menu.item_name as mname, Orders.order_id as oid, Orders.order_total as price, 
-                Drivers.name as dname, Orders.delivery_status as status, Menu.img as img, Drivers.phone 
+                Drivers.name as dname, Orders.delivery_status as status, Menu.img as img, Drivers.phone,
+                Restaurants.latitude as res_lat, Restaurants.longitude as res_lng 
          FROM Orders 
          JOIN Address ON Orders.user_id = Address.user_id 
          JOIN Menu ON Orders.menu_id = Menu.menu_id 
          JOIN Drivers ON Orders.driver_id = Drivers.driver_id 
+         JOIN Restaurants ON Menu.restaurant_id = Restaurants.restaurant_id 
          WHERE order_id = $oid";
 $reso = mysqli_query($conn, $sqlo);
 
@@ -40,6 +43,10 @@ $state = $row['state'];
 $street = $row['street'];
 $city = $row['city'];
 $pin = $row['pin'];
+$cust_lat = $row['cust_lat'];
+$cust_lng = $row['cust_lng'];
+$res_lat = $row['res_lat'];
+$res_lng = $row['res_lng'];
 
 if ($status == "cooking") {
     $st = 1;
@@ -56,21 +63,6 @@ $pid = $rest["payment_id"];
 $pm = $rest["payment_method"];
 $pst = $rest["status"];
 $pr = $rest["amount"];
-
-// Map city names to coordinates
-$cityCoordinates = [
-    "Bengaluru" => ["lat" => 12.9716, "lng" => 77.5946], // Coordinates for Bengaluru
-    "Puducherry" => ["lat" => 11.9139, "lng" => 79.8145], // Coordinates for Puducherry
-    // Add more cities as needed
-];
-
-// Default coordinates (fallback if city is not in the map)
-$defaultCoordinates = ["lat" => 12.9716, "lng" => 77.5946]; // Default to Bengaluru
-
-// Get coordinates for the customer's city
-$coordinates = $cityCoordinates[$city] ?? $defaultCoordinates;
-$latitude = $coordinates["lat"];
-$longitude = $coordinates["lng"];
 ?>
 
 <!DOCTYPE html>
@@ -85,6 +77,8 @@ $longitude = $coordinates["lng"];
     <link rel="stylesheet" href="./css/style.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 </head>
 <body>
     <!-- MOBILE NAV -->
@@ -179,6 +173,10 @@ $longitude = $coordinates["lng"];
             </figure>
             <!-- Leaflet Map -->
             <div id="map" style="height: 400px; width: 100%;"></div>
+            <!-- Estimated Time -->
+            <div id="time" style="text-align: center; margin-top: 20px; font-size: 18px; font-weight: bold;">
+                Estimated Delivery Time: <span id="estimated-time">Calculating...</span>
+            </div>
         </section>
     </section>
 
@@ -238,21 +236,48 @@ $longitude = $coordinates["lng"];
     <script src="js/main.js"></script>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Leaflet Routing Machine JS -->
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <script>
         // Initialize the map with dynamic coordinates
-        var latitude = <?php echo $latitude; ?>;
-        var longitude = <?php echo $longitude; ?>;
-        var map = L.map('map').setView([latitude, longitude], 13); // Set the initial view to the customer's location
+        var cust_lat = <?php echo $cust_lat; ?>;
+        var cust_lng = <?php echo $cust_lng; ?>;
+        var res_lat = <?php echo $res_lat; ?>;
+        var res_lng = <?php echo $res_lng; ?>;
+
+        var map = L.map('map').setView([cust_lat, cust_lng], 13); // Set the initial view to the customer's location
 
         // Add a tile layer (you can use OpenStreetMap or any other tile provider)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Add a marker (you can customize the marker's position and popup)
-        var marker = L.marker([latitude, longitude]).addTo(map)
-            .bindPopup('Your delivery location')
+        // Add markers for restaurant and customer
+        var restaurantMarker = L.marker([res_lat, res_lng]).addTo(map)
+            .bindPopup('Restaurant Location')
             .openPopup();
+
+        var customerMarker = L.marker([cust_lat, cust_lng]).addTo(map)
+            .bindPopup('Customer Location')
+            .openPopup();
+
+        // Add routing control
+        var control = L.Routing.control({
+            waypoints: [
+                L.latLng(res_lat, res_lng), // Restaurant location
+                L.latLng(cust_lat, cust_lng) // Customer location
+            ],
+            routeWhileDragging: true,
+            show: true
+        }).addTo(map);
+
+        // Listen for route calculation
+        control.on('routesfound', function (e) {
+            var routes = e.routes;
+            var route = routes[0];
+            var time = Math.round(route.summary.totalTime / 60); // Convert seconds to minutes
+            document.getElementById('estimated-time').innerText = time + ' minutes';
+        });
     </script>
 </body>
 </html>
