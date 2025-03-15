@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 15, 2025 at 05:26 PM
+-- Generation Time: Mar 15, 2025 at 06:19 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -33,16 +33,18 @@ CREATE TABLE `address` (
   `state` varchar(255) NOT NULL,
   `city` varchar(255) NOT NULL,
   `street` varchar(255) NOT NULL,
-  `pincode` int(11) NOT NULL
+  `pincode` int(11) NOT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `address`
 --
 
-INSERT INTO `address` (`address_id`, `user_id`, `state`, `city`, `street`, `pincode`) VALUES
-(3001, 24001, 'Karnataka', 'Bengaluru', 'Ullal Upanagar', 560056),
-(3002, 24002, 'Karnataka', 'Bengaluru', 'Channasandra', 560098);
+INSERT INTO `address` (`address_id`, `user_id`, `state`, `city`, `street`, `pincode`, `latitude`, `longitude`) VALUES
+(3001, 24001, 'Karnataka', 'Bengaluru', 'Ullal Upanagar', 560056, 12.90000000, 77.58000000),
+(3002, 24002, 'Karnataka', 'Bengaluru', 'Channasandra', 560098, 12.93000000, 77.62000000);
 
 -- --------------------------------------------------------
 
@@ -236,22 +238,24 @@ CREATE TABLE `restaurants` (
   `address` varchar(255) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `desp` varchar(300) NOT NULL,
-  `img` varchar(255) NOT NULL
+  `img` varchar(255) NOT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `restaurants`
 --
 
-INSERT INTO `restaurants` (`restaurant_id`, `name`, `address`, `phone`, `desp`, `img`) VALUES
-(101, 'Dominos', 'DP 65807 R1/9/MAGR/GL-S/4, Ground Floor, Namma Metro, MG Road, Bangalore', '9886665807', 'Domino’s has more than 20,000 stores in over 90 international markets across the globe, and we’re still growing! ', './img/res/101.jpg'),
-(102, 'Nandhana Palace', '#7, 4th B block, Near BDA Complex, Koramangala, Bangalore – 560034', '08046131111', 'At our Andhra Restaurant, we promise an intimate and relaxed dining experience to our patrons and ensure them a memorable food experience every time. We’ve redefined the authentic Andhra style restaurant.', './img/res/102.jpg'),
-(103, 'Shanti Sagar', 'Marenahalli Main Rd, Govindaraja Nagar Ward, PF Layout, Vijayanagar, Bengaluru, Karnataka 560040', '08023400234', 'a commercial establishment that provides lodging, meals, and other services to guests, travelers, and tourists', './img/res/103.jpg'),
-(104, 'Onesta', '#335,IdealHome.BKVHVP Aracade,Rajarajeshwari Temple Rd,Rajarajeshwari, Nagar,Bengaluru,Karnataka,560098', '9513736269', 'Onesta has always aimed to be more than just a pizzeria. We intend to become an experience for all. It’s our customer experience that inspires us to create more fun recipes', './img/res/104.jpg'),
-(105, 'Vidyarthi Bhavan', '32, Gandhi Bazaar Main Rd, Gandhi Bazaar, Basavanagudi, Bengaluru, Karnataka 560004', '08026677588', 'Vidyarthi Bhavan, a heritage South Indian vegetarian restaurant, started in 1943 as a small student\'s eatery.', './img/res/105.jpg'),
-(106, 'Cool Joint', '11th Main, 70, 30th Cross Rd, Geetha Colony, 4th T Block East, Jayanagar, Bengaluru, Karnataka 560011', '9035444671', 'Cool joint is the best place to have sandwiches in Jayanagar. The place is always crowded with people but the service is really fast.', './img/res/106.jpg'),
-(107, 'Meghana Foods', '52, 1st Floor, 33rd Cross Rd, near Cafe Coffee Day, 4th Block, Jayanagar, Bengaluru, Karnataka 560011', '70229 02913', 'Meghana, meaning rain, is a restaurant that was started in the year 2006, at Koramangala, Bengaluru with the intention of serving authentic Andhra style food', './img/res/107.jpg'),
-(108, 'Rameshwaram Cafe', '119, 12TH B CROSS, 19TH MAIN, J P NAGAR 2ND PHASE, BANGALORE, KARNATAKA - 560078', '8151999191', 'The Rameshwaram Cafe is a premium South Indian chain of QSR module and is a trademark registered brand under the mother company M/s. Altran Ventures Pvt. Ltd.', './img/res/108.jpg');
+INSERT INTO `restaurants` (`restaurant_id`, `name`, `address`, `phone`, `desp`, `img`, `latitude`, `longitude`) VALUES
+(101, 'Dominos', 'DP 65807 R1/9/MAGR/GL-S/4, Ground Floor, Namma Metro, MG Road, Bangalore', '9886665807', 'Domino’s has more than 20,000 stores in over 90 international markets across the globe, and we’re still growing! ', './img/res/101.jpg', 12.97160000, 77.59460000),
+(102, 'Nandhana Palace', '#7, 4th B block, Near BDA Complex, Koramangala, Bangalore – 560034', '08046131111', 'At our Andhra Restaurant, we promise an intimate and relaxed dining experience to our patrons and ensure them a memorable food experience every time. We’ve redefined the authentic Andhra style restaurant.', './img/res/102.jpg', 12.93520000, 77.62450000),
+(103, 'Shanti Sagar', 'Marenahalli Main Rd, Govindaraja Nagar Ward, PF Layout, Vijayanagar, Bengaluru, Karnataka 560040', '08023400234', 'a commercial establishment that provides lodging, meals, and other services to guests, travelers, and tourists', './img/res/103.jpg', 12.92790000, 77.62710000),
+(104, 'Onesta', '#335,IdealHome.BKVHVP Aracade,Rajarajeshwari Temple Rd,Rajarajeshwari, Nagar,Bengaluru,Karnataka,560098', '9513736269', 'Onesta has always aimed to be more than just a pizzeria. We intend to become an experience for all. It’s our customer experience that inspires us to create more fun recipes', './img/res/104.jpg', 12.93460000, 77.53370000),
+(105, 'Vidyarthi Bhavan', '32, Gandhi Bazaar Main Rd, Gandhi Bazaar, Basavanagudi, Bengaluru, Karnataka 560004', '08026677588', 'Vidyarthi Bhavan, a heritage South Indian vegetarian restaurant, started in 1943 as a small student\'s eatery.', './img/res/105.jpg', 12.94160000, 77.57300000),
+(106, 'Cool Joint', '11th Main, 70, 30th Cross Rd, Geetha Colony, 4th T Block East, Jayanagar, Bengaluru, Karnataka 560011', '9035444671', 'Cool joint is the best place to have sandwiches in Jayanagar. The place is always crowded with people but the service is really fast.', './img/res/106.jpg', 12.92790000, 77.62710000),
+(107, 'Meghana Foods', '52, 1st Floor, 33rd Cross Rd, near Cafe Coffee Day, 4th Block, Jayanagar, Bengaluru, Karnataka 560011', '70229 02913', 'Meghana, meaning rain, is a restaurant that was started in the year 2006, at Koramangala, Bengaluru with the intention of serving authentic Andhra style food', './img/res/107.jpg', 12.97160000, 77.59460000),
+(108, 'Rameshwaram Cafe', '119, 12TH B CROSS, 19TH MAIN, J P NAGAR 2ND PHASE, BANGALORE, KARNATAKA - 560078', '8151999191', 'The Rameshwaram Cafe is a premium South Indian chain of QSR module and is a trademark registered brand under the mother company M/s. Altran Ventures Pvt. Ltd.', './img/res/108.jpg', 12.90630000, 77.58570000);
 
 -- --------------------------------------------------------
 
