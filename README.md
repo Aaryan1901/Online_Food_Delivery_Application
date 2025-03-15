@@ -38,5 +38,5 @@ Yummie Wheels is a web-based food delivery platform that allows users to order f
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/yummie-wheels.git
-   cd yummie-wheels
+   git clone https://github.com/Aaryan1901/Online_Food_Delivery_Application.git
+   cd Online_Food_Delivery_Application
