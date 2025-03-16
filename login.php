@@ -129,7 +129,6 @@ include './db_connect.php';
 								header('Location: ./login.php');
 							}
 						}
-						echo $_SESSION['active'];
 						?>
 					</div>
 				</div>
